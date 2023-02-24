@@ -1295,18 +1295,21 @@ func (c *CharData) setIndex(index int) {
 
 // writeTo serializes character data to the writer.
 func (c *CharData) writeTo(w *bufio.Writer, s *WriteSettings) {
-	if true { // TUSHAR CUSTOMIZATION
-		w.WriteString(`<![CDATA[`)
-		w.WriteString(c.Data)
-		w.WriteString(`]]>`)
-	} else {
-		var m escapeMode
-		if s.CanonicalText {
-			m = escapeCanonicalText
+	c.Data = strings.TrimSpace(c.Data)
+	if len(c.Data) > 0 {
+		if true {
+			w.WriteString(`<![CDATA[`)
+			w.WriteString(c.Data)
+			w.WriteString(`]]>`)
 		} else {
-			m = escapeNormal
+			var m escapeMode
+			if s.CanonicalText {
+				m = escapeCanonicalText
+			} else {
+				m = escapeNormal
+			}
+			escapeString(w, c.Data, m)
 		}
-		escapeString(w, c.Data, m)
 	}
 }
 
